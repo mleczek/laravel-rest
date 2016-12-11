@@ -1,0 +1,16 @@
+<phpunit colors="true">
+	<testsuites>
+		<testsuite name="Library Test Suite">
+			<directory suffix="Test.php">./tests</directory>
+		</testsuite>
+	</testsuites>
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">src</directory>
+		</whitelist>
+	</filter>
+	<logging>
+		<log type="coverage-html" target="coverage"/>
+		<log type="coverage-text" target="php://stdout" showUncoveredFiles="true"/>
+	</logging>
+</phpunit>
