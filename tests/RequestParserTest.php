@@ -11,7 +11,7 @@ use \Symfony\Component\HttpFoundation\Request as BaseRequest;
 class RequestParserTest extends \PHPUnit_Framework_TestCase
 {
     private $uri = '?fields=id,first_name,last_name,messages.recipient.last_name'
-    . '&filter=last_name_in:["Smith",Bloggs],messages.content_not_empty'
+    . '&filter=last_name_in:["O\"Smith",Bloggs],messages.empty,messages.recipient:"5"'
     . '&sort=messages.latest,last_name_asc,first_name_asc'
     . '&with=messages,messages.recipient'
     . '&offset=1,messages.recipient.0'
@@ -61,7 +61,7 @@ class RequestParserTest extends \PHPUnit_Framework_TestCase
     public function testFilterQueryParam()
     {
         $result = $this->parser->filters();
-        $expected = ['last_name_in' => ['Smith', 'Bloggs']];
+        $expected = ['last_name_in' => ['O"Smith', 'Bloggs']];
 
         $this->assertInternalType('array', $result);
         $this->assertEquals($expected, $result);
@@ -70,7 +70,10 @@ class RequestParserTest extends \PHPUnit_Framework_TestCase
     public function testFilterQueryParamWithPrefix()
     {
         $result = $this->parser->filters('messages');
-        $expected = ['content_not_empty' => []];
+        $expected = [
+            'empty' => [],
+            'recipient' => [5],
+        ];
 
         $this->assertTrue(is_array($result));
         $this->assertEquals($expected, $result);

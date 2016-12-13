@@ -116,11 +116,12 @@ class RequestParser
             $this->params[$key][$prefix][$name] = [];
 
             // Divide arguments into values
-            preg_match_all('/"(?:\\.|[^\\"])*"|[^,\]\["]+/', $arguments_str, $arguments);
+            preg_match_all('/"(?:\\\\.|[^\\\\"])*"|[^,\]\["]+/', $arguments_str, $arguments);
             foreach ($arguments[0] as $argument) {
                 // Remove quotation marks
                 if (str_is('"*"', $argument)) {
                     $argument = substr($argument, 1, -1);
+                    $argument = str_replace('\\"', '"', $argument);
                 }
 
                 // Store filter argument
@@ -254,7 +255,7 @@ class RequestParser
     {
         $key = $this->config->get('rest.keys.with');
 
-        // Request user value
+        // Get values specified in the request query param
         if (isset($this->params[$key])) {
             return $this->params[$key];
         }
