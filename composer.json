@@ -31,7 +31,5 @@
         "psr-4": {
             "Mleczek\\Rest\\Tests\\": "tests/"
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }

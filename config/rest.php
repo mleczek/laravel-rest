@@ -16,6 +16,4 @@ return [
         'maxValue' => 100,
     ],
 
-    //'throw_query_syntax_errors' => true,
-
 ];
