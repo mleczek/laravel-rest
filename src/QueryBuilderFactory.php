@@ -28,7 +28,7 @@ class QueryBuilderFactory
         $this->context = $context;
     }
 
-    public function get($query)
+    public function make($query)
     {
         return new QueryBuilder($query, $this->context);
     }

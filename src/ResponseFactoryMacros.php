@@ -17,14 +17,9 @@ class ResponseFactoryMacros
     protected $response;
 
     /**
-     * @var RequestParser
+     * @var QueryExecutor
      */
-    protected $request;
-
-    /**
-     * @var QueryBuilderFactory
-     */
-    protected $builder;
+    protected $executor;
 
     /**
      * Macros constructor.
@@ -33,64 +28,28 @@ class ResponseFactoryMacros
      * @param RequestParser $request
      * @param QueryBuilderFactory $builder
      */
-    public function __construct(ResponseFactory $response, RequestParser $request, QueryBuilderFactory $builder)
+    public function __construct(ResponseFactory $response, QueryExecutor $executor)
     {
         $this->response = $response;
-        $this->request = $request;
-        $this->builder = $builder;
+        $this->executor = $executor;
     }
 
-    /**
-     * @param QueryBuilder $builder
-     */
-    public function includeRelations(QueryBuilder $builder)
+    public function item($data)
     {
-        foreach ($this->request->with() as $relation_name) {
-            $callback = function ($query, $prefix) {
-                return $this->builder->get($query)
-                    ->sort($this->request->sort($prefix))
-                    ->filter($this->request->filters($prefix))
-                    ->fields($this->request->fields($prefix))
-                    ->offset($this->request->offset($prefix))
-                    ->limit($this->request->limit($prefix));
-            };
-
-            $builder->with($relation_name, $callback);
+        if($data instanceof Builder) {
+            $data = $this->executor->item($data);
         }
+
+        return $this->response->json($data, 200);
     }
 
-    public function item(Builder $query)
+    public function collection($data)
     {
-        $this->request->refresh();
-        $builder = $this->builder->get($query)
-            ->fields($this->request->fields());
+        if($data instanceof Builder) {
+            $data = $this->executor->collection($data);
+        }
 
-        $this->includeRelations($builder);
-        $entity = $builder->getItem();
-
-        return $this->response->json($entity, 200);
-    }
-
-    public function collection(Builder $query)
-    {
-        $builder = $this->builder->get($query)
-            ->sort($this->request->sort())
-            ->filter($this->request->filters())
-            ->fields($this->request->fields())
-            ->offset($this->request->offset())
-            ->limit($this->request->limit());
-
-        $this->includeRelations($builder);
-        $entities = $builder->getCollection();
-
-        $json = [
-            'count' => $entities->count(),
-            'limit' => $this->request->limit(),
-            'offset' => $this->request->offset(),
-            'data' => $entities,
-        ];
-
-        return $this->response->json($json, 206);
+        return $this->response->json($data, 206);
     }
 
     public function accepted()
@@ -114,14 +73,14 @@ class ResponseFactoryMacros
         return $response;
     }
 
-    public function updated()
+    public function updated($model = null)
     {
-        return $this->response->make('', 200);
+        return $this->response->make($model, 200);
     }
 
-    public function patched()
+    public function patched($model = null)
     {
-        return $this->response->make('', 200);
+        return $this->response->make($model, 200);
     }
 
     public function deleted()

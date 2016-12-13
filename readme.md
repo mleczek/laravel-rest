@@ -1,7 +1,6 @@
 # Laravel REST Package
 Laravel package with a set of tools helpful for building REST API.
 
-Table of content:
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#basic-usage)
@@ -13,14 +12,14 @@ Table of content:
     - [Sort](#sort)
     - [Filter](#filter)
   - [Responses](#responses)
-    - [item](#item)
-    - [collection](#collection)
-    - [accepted](#accepted)
-    - [noContent](#nocontent)
-    - [created](#created)
-    - [updated](#updated)
-    - [patched](#patched)
-    - [deleted](#deleted)
+    - [Item](#item)
+    - [Collection](#collection)
+    - [Accepted](#accepted)
+    - [No Content](#no-content)
+    - [Created](#created)
+    - [Updated](#updated)
+    - [Patched](#patched)
+    - [Deleted](#deleted)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -63,17 +62,17 @@ Register new local copy of the `ContextServiceProvider` in the `config/app.php` 
 ## Usage
 
 ### Query params
-...
+Supplied by the customer control the format of the response
+most often by narrowing result.
 
 #### With
-Include related data in response.
+Include related data in response:
 ```
-users?with=messages
+users?with=messages,permissions
 ```
 
-In the background if you call the `response()->item(User::query())`
-the library will attach related models using Eloquent defined relations,
-which is equal to `$quer->with('messages')`.
+In the background the library will attach related models using Eloquent defined relations,
+which is quite similar to calling `$quer->with(['messages', 'permissions'])`.
 
 By default all relations are disabled, which means that you have to explicitly
 define which relations can be used in API call. You can set up this in the
@@ -94,7 +93,7 @@ class UserWithContext
 {
     public function messages()
     {
-        return Auth::user()->is_root;
+        return Auth::check() && Auth::user()->is_root;
     }
 }
 ```
@@ -110,7 +109,7 @@ Now if someone without root access call the `with=messages` then nothing will ha
 If you'd like you can throw 401 or 403 response code from the context class.
 
 #### Offset
-Skip *n* first items.
+Skip *n* first items:
 ```
 users?offset=3
 ```
@@ -121,7 +120,7 @@ users?with=messages&offset=3,messages.5
 ```
 
 #### Limit
-Limit results to *n* models.
+Limit results to *n* models:
 ```
 users?limit=5
 ```
@@ -132,7 +131,7 @@ users?with=messages&limit=messages.1
 ```
 
 #### Fields
-Get only specified fields
+Get only specified fields:
 ```
 users?fields=first_name,last_name
 ```
@@ -148,23 +147,112 @@ then all fields will be retrieved for the related one:
 users?with=messages&fields=first_name,last_name
 ```
 
-Aboce example will return `first_name`, `last_name` and all columns for the
+Above example will return `first_name`, `last_name` and all columns for the
 messages model (eq. `id`, `author_id`, `recipient_id`, `content`).
 This helps in finding a sub-optimal query - if you don't want any field from
 the related model then just simply remove redundant values from the `with` 
 query param.
 
 #### Sort
-...
+Return results in specified results:
+```
+users?sort=score,last_name_desc
+```
+
+You can use this as well for the related data:
+```
+users?with=messages&sort=messages.latest
+```
+
+By default no sort methods are available, which means that you have to explicitly
+define sort that can be used for specific model. You can set up this in the
+previously published `ContextServiceProvider`:
+```php
+$sort = [
+    Message::class => MessageSortContext::class,
+]
+```
+
+Then you have to create context class. Sort name will be converted to method name using
+camelCase style (eq. `last_name_desc` will call `lastNameDesc` method). As a first
+argument you will receive the `Illuminate\Database\Query\Builder`.
+
+```php
+class MessageSortContext
+{
+    public function latest($query)
+    {
+        $query->latest();
+    }
+}
+```
+
+Now you can sort messages using `latest` method in any context:
+```
+users?with=messages&sort=messages.latest
+messages?with=author&sort=latest
+```
 
 #### Filter
-...
+Put constraint on request:
+```
+users?filter=score_above:30,last_name_in:[Smith,Bloggs]
+```
+
+Unlike `sort` param the `filter` query param can also accept arguments:
+```
+users?filter=without_args
+users?filter=one_arg:5
+users?filter=special_chars:"O'X\" []],,"
+users?filter=two_or_more_args:[12,"Lorem lipsum"]
+```
+
+You can use this as well for the related data:
+```
+users?with=messages&filter=messages.recipient_id:5
+```
+
+By default no filter methods are available, which means that you have to explicitly
+define filters that can be used for specific model. You can set up this in the
+previously published `ContextServiceProvider`:
+```php
+$filter = [
+    User::class => UserFilterContext::class,
+]
+```
+
+Then you have to create context class. Filter name will be converted to method name using
+camelCase style (eq. `last_name_in` will call `lastNameIn` method). As a first
+argument you will receive the `Illuminate\Database\Query\Builder`.
+
+```php
+class UserFilterContext
+{
+    public function scoreAbove($query, $value)
+    {
+        // Validation of the $value argument...
+        
+        $query->where('score', '>', $value);
+    }
+}
+```
+
+Now you can filter users using `scoreAbove` method in any context:
+```
+users?filter=score_above:15
+groups?with=users&filter=users.score_above:5
+```
+
 
 ### Responses
 Library extends the `Response` class using some helpful macros.
 
-#### item($query[, $defaults])
-Response single model item with response code `200 OK`.
+#### Item
+```php
+response()->item($query);
+```
+
+Response single model item with response code `200 OK`:
 ```php
 return response()->item(User::query());
 ```
@@ -172,37 +260,119 @@ return response()->item(User::query());
 This macro will use the `fields` and `with` query param.
 
 This is not recommended to use `with`, `select` and `addSelect` on the `$query`
-parameter passed to the class. After all if you would like to do this the behavior
+parameter passed to the method. After all if you would like to do this the behavior
 it is as follows:
 - if someone pass the same relation name in `with` query param
 the one you created will be overridden
 - if someone pass the `fields` query parameter then only
 fields specified in this parameter will be returned
 
-#### collection($query[, $defaults])
-...
+Often you will need to do some operations using retrieved model, in this case
+use `rest()` helper funtion:
+```php
+public function show()
+{
+    $user = rest()->item(User::query());
+    $this->authorize('show', $user);
 
-#### accepted()
-...
+    return response()->item($user);
+}
+```
 
-#### noContent()
-...
+#### Collection
+```php
+response()->collection($query);
+```
 
-#### created($model[, $location])
-...
+Response collection of models with response code `206 Partial Content`:
+```php
+return response()->item(User::query());
+```
 
-#### updated()
-...
+This macro will use the `fields`, `sort`, `filter`, `offset`, `limit`
+and `with` query param. Again, using `orderBy`, `select`, `addSelect`, `limit/take`,
+`offset/skip` methods on the `$query` argument is not recommended, but fell free
+to add some constraints using `where` method.
+```php
+return response()->item(User::where('is_root', false));
+```
 
-#### patched()
-...
+If you will need to make some operations before returning response you can use
+`rest()` helper function:
+```php
+public function show()
+{
+    $users = rest()->collection(User::query());
+    // Some operations goes here...
+    // $users->count  - number of retrieved models [0,limit]
+    // $users->limit  - max number of retrieved models
+    // $users->offset - number of skipped models
+    // $users->data   - retrieved models
 
-#### deleted()
-...
+    return response()->collections($users);
+}
+```
+
+#### Accepted
+```php
+response()->accepted();
+```
+
+Empty response with status code `202 Accepted`.
+
+#### No Content
+```php
+response()->noContent();
+```
+
+Empty response with status code `204 No Content`.
+
+#### Created
+```php
+response()->created($model[, $location]);
+```
+
+Response created model with status code `201 Created`. If `$location` is specified
+then appropriate `Location` header will be added to the response.
+
+#### Updated
+```php
+response()->updated([$model]);
+```
+
+Response updated model (if provided) with status code `200 OK`.
+
+#### Patched
+```php
+response()->patched([$model]);
+```
+
+Response part of updated model (if provided) with status code `200 OK`.
+
+#### Deleted
+```php
+response()->deleted();
+```
+
+Empty response with status code `204 No Content`.
 
 
 ## Contributing
-Thank you for considering contributing! If you would like to fix a bug or propose a new feature, you can submit a Pull Request.
+Thank you for considering contributing! If you would like to fix a bug or propose
+a new feature, you can submit a Pull Request.
+
+Below have been listed some tasks requiring attention:
+
+- [ ] Write tests
+- [ ] Resolve context classes using service container
+- [ ] Default sort and filter context
+- [ ] Timestamp sort and filter context
+- [x] Pre processing (query)
+- [ ] Post processing (results)
+- [x] Add macro `response()->item($model)`
+- [x] Add macro `response()->collection($models)`
+- [x] Implement `QueryExecutor` and associated `rest()` helper: `rest()->item($query)`
+- [ ] Suppport [Implicit Binding](https://laravel.com/docs/5.3/routing#implicit-binding) ??
 
 
 ## License
