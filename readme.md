@@ -108,6 +108,9 @@ $with = [
 Now if someone without root access call the `with=messages` then nothing will happen.
 If you'd like you can throw 401 or 403 response code from the context class.
 
+In `UserWithContext` class and other context classes you can inject your dependencies
+in the constructor, because class is resolved using service container.
+
 #### Offset
 Skip *n* first items:
 ```
@@ -193,6 +196,9 @@ users?with=messages&sort=messages.latest
 messages?with=author&sort=latest
 ```
 
+In `MessageSortContext` class and other context classes you can inject your dependencies
+in the constructor, because class is resolved using service container.
+
 #### Filter
 Put constraint on request:
 ```
@@ -242,6 +248,9 @@ Now you can filter users using `scoreAbove` method in any context:
 users?filter=score_above:15
 groups?with=users&filter=users.score_above:5
 ```
+
+In `UserFilterContext` class and other context classes you can inject your dependencies
+in the constructor, because class is resolved using service container.
 
 
 ### Responses
@@ -364,7 +373,7 @@ a new feature, you can submit a Pull Request.
 Some tasks requiring attention have been listed below:
 
 - [ ] Write tests
-- [ ] Resolve context classes using service container
+- [x] Resolve context classes using service container
 - [ ] Default sort and filter context
 - [ ] Timestamp sort and filter context
 - [ ] Params validation
@@ -373,7 +382,7 @@ Some tasks requiring attention have been listed below:
 - [x] Add macro `response()->item($model)`
 - [x] Add macro `response()->collection($models)`
 - [x] Implement `QueryExecutor` and associated `rest()` helper: `rest()->item($query)`
-- [ ] Support for Laravel 5.*
+- [ ] Support for all versions of Laravel 5 (currently tested only on v5.3)
 - [ ] Suppport [Implicit Binding](https://laravel.com/docs/5.3/routing#implicit-binding) ??
 
 
