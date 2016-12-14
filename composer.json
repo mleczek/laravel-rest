@@ -28,8 +28,8 @@
             "Mleczek\\Rest\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
+    "psr-4": {
+        "autoload-dev": {
             "Mleczek\\Rest\\Tests\\": "tests/"
         }
     }

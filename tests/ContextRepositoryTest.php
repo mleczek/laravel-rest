@@ -4,6 +4,7 @@
 namespace Mleczek\Rest\Tests;
 
 
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Mleczek\Rest\ContextRepository;
@@ -23,7 +24,13 @@ class ContextRepositoryTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->context = new ContextRepository();
+        $container = \Mockery::mock(Container::class)
+            ->shouldReceive('make')
+            ->andReturnUsing(function($handler) {
+                return new $handler;
+            })->getMock();
+
+        $this->context = new ContextRepository($container);
     }
 
     protected function tearDown()

@@ -4,6 +4,7 @@
 namespace Mleczek\Rest;
 
 
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -26,6 +27,19 @@ class ContextRepository
     protected $with = [];
 
     /**
+     * @var Container
+     */
+    protected $container;
+
+    /**
+     * ContextRepository constructor.
+     */
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
      * @param Builder|Relation $query
      * @param string $filter
      * @param array $args
@@ -43,7 +57,7 @@ class ContextRepository
 
         foreach($this->filter[$model_ns] as $context) {
             // Create instance of the context handler
-            $handler = new $context; // TODO: Resolve using service container
+            $handler = $this->container->make($context);
             $method_name = $this->camelCaseMethodName($filter);
 
             // If method exists then return value determine
@@ -82,7 +96,7 @@ class ContextRepository
 
         foreach($this->sort[$model_ns] as $context) {
             // Create instance of the context handler
-            $handler = new $context; // TODO: Resolve using service container
+            $handler = $this->container->make($context);
             $method_name = $this->camelCaseMethodName($sort);
 
             // If method exists then return value determine
@@ -129,7 +143,7 @@ class ContextRepository
             }
 
             // Create instance of the context handler
-            $handler = new $context; // TODO: Resolve using service container
+            $handler = $this->container->make($context);
             $method_name = $this->camelCaseMethodName($relation);
 
             // If method exists then return value determine

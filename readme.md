@@ -44,7 +44,7 @@ In `config/app.php` add the `RestServiceProvider`:
 ## Configuration
 Publish the package configuration and `ContextServiceProvider`:
 ```
-php artisan vendor:publish --provider="Mleczek\Rest\RestServiceProvider::class"
+php artisan vendor:publish --provider="Mleczek\Rest\RestServiceProvider"
 ```
 
 This command will create 2 files for you:
@@ -62,8 +62,8 @@ Register new local copy of the `ContextServiceProvider` in the `config/app.php` 
 ## Usage
 
 ### Query params
-Supplied by the customer control the format of the response
-most often by narrowing result.
+Supplied by the client. They control the format of the response most often
+by narrowing result.
 
 #### With
 Include related data in response:
@@ -84,9 +84,9 @@ $with = [
 ]
 ```
 
-If you'd like to do some policy checks then you can use define context class.
+If you'd like to do some policy checks then you can define context class.
 In this class you can create methods which name is equal to the relation name.
-Whenever you try to access relation the new instance of this class will be created
+Whenever you try to access this relation the new instance of this class will be created
 and the result of the method will determine if the relation can be used or not.
 ```php
 class UserWithContext
@@ -120,7 +120,7 @@ users?with=messages&offset=3,messages.5
 ```
 
 #### Limit
-Limit results to *n* models:
+Limit results to *n* items:
 ```
 users?limit=5
 ```
@@ -361,17 +361,19 @@ Empty response with status code `204 No Content`.
 Thank you for considering contributing! If you would like to fix a bug or propose
 a new feature, you can submit a Pull Request.
 
-Below have been listed some tasks requiring attention:
+Some tasks requiring attention have been listed below:
 
 - [ ] Write tests
 - [ ] Resolve context classes using service container
 - [ ] Default sort and filter context
 - [ ] Timestamp sort and filter context
+- [ ] Params validation
 - [x] Pre processing (query)
 - [ ] Post processing (results)
 - [x] Add macro `response()->item($model)`
 - [x] Add macro `response()->collection($models)`
 - [x] Implement `QueryExecutor` and associated `rest()` helper: `rest()->item($query)`
+- [ ] Support for Laravel 5.*
 - [ ] Suppport [Implicit Binding](https://laravel.com/docs/5.3/routing#implicit-binding) ??
 
 

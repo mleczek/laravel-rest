@@ -70,6 +70,8 @@ class QueryExecutor
         $this->includeRelations($builder);
         $entities = $builder->getCollection();
 
+        // TODO: Throw an exception (404 not found) if: count==0, offset!=0 and limit>0?
+
         return (object)[
             'count' => $entities->count(),
             'limit' => $this->request->limit(),
