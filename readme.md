@@ -383,7 +383,8 @@ Some tasks requiring attention have been listed below:
 - [x] Add macro `response()->collection($models)`
 - [x] Implement `QueryExecutor` and associated `rest()` helper: `rest()->item($query)`
 - [ ] Support for all versions of Laravel 5 (currently tested only on v5.3)
-- [ ] Suppport [Implicit Binding](https://laravel.com/docs/5.3/routing#implicit-binding) ??
+- [ ] Contracts and drivers (currently depends on Eloquent)
+- [ ] Content negotiation (support xml response)
 
 
 ## License

@@ -62,7 +62,7 @@ class ContextRepository
 
             // If method exists then return value determine
             // whether relation can be used or not
-            if(method_exists($handler, $method_name)) {
+            if(method_exists($handler, $method_name) || method_exists($handler, '__call')) {
                 // FIXME: Check number of parameters passed to handler (http://stackoverflow.com/questions/3989190/get-number-of-arguments-for-a-class-function)
 
                 call_user_func_array([$handler, $method_name], array_merge([$query], $args));
@@ -101,7 +101,7 @@ class ContextRepository
 
             // If method exists then return value determine
             // whether relation can be used or not
-            if(method_exists($handler, $method_name)) {
+            if(method_exists($handler, $method_name) || method_exists($handler, '__call')) {
                 call_user_func([$handler, $method_name], $query);
             }
         }
