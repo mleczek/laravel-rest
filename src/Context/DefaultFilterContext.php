@@ -23,7 +23,7 @@ class DefaultFilterContext
         $query = $args[0];
         $model = $query->newQuery()->getModel();
 
-        $value = array_get($args, 1);
+        $value = (string) array_get($args, 1);
         $attribute_name = snake_case($method_name);
 
         if($model->isFillable($attribute_name)) {

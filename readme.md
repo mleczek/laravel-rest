@@ -157,7 +157,7 @@ the related model then just simply remove redundant values from the `with`
 query param.
 
 #### Sort
-Return results in specified results:
+Return results in specified order:
 ```
 users?sort=score,last_name_desc
 ```
@@ -295,7 +295,7 @@ response()->collection($query);
 
 Response collection of models with response code `206 Partial Content`:
 ```php
-return response()->item(User::query());
+return response()->collection(User::query());
 ```
 
 This macro will use the `fields`, `sort`, `filter`, `offset`, `limit`
@@ -303,7 +303,7 @@ and `with` query param. Again, using `orderBy`, `select`, `addSelect`, `limit/ta
 `offset/skip` methods on the `$query` argument is not recommended, but fell free
 to add some constraints using `where` method.
 ```php
-return response()->item(User::where('is_root', false));
+return response()->collection(User::where('is_root', false));
 ```
 
 If you will need to make some operations before returning response you can use
@@ -366,6 +366,40 @@ response()->deleted();
 Empty response with status code `204 No Content`.
 
 
+## Tips and tricks
+
+### Default Context
+
+By default library implements 2 context classes:
+```php
+protected $sort = [
+    // Your context classes...
+    User::class => \Mleczek\Rest\Context\DefaultSortContext::class,
+];
+
+protected $filter = [
+    // Your context classes...
+    User::class => \Mleczek\Rest\Context\DefaultFilterContext::class,
+];
+```
+
+These context can be used with any class and allow sorting and filtering using
+fillable attributes. Example usage for the default User model:
+```
+// ?filter=<attribute_name>:<expected_value>
+users?filter=email:"rest@example.com"
+users?filter=password:some_string // side effect
+
+// ?sort=<attribute_name> or ?sort=<attribute_name>_desc
+users?sort=name,email_desc
+users?sort=name_desc
+```
+
+**It's recommended to use only for the dev purposes**. In future releases implementation
+will change in order to prevent accidental security vulnerabilities (like the above one
+with password column). Any ideas are welcome.
+
+
 ## Contributing
 Thank you for considering contributing! If you would like to fix a bug or propose
 a new feature, you can submit a Pull Request.
@@ -374,7 +408,7 @@ Some tasks requiring attention have been listed below:
 
 - [ ] Write tests
 - [x] Resolve context classes using service container
-- [ ] Default sort and filter context
+- [x] Default sort and filter context
 - [ ] Timestamp sort and filter context
 - [ ] Params validation
 - [x] Pre processing (query)
@@ -385,6 +419,7 @@ Some tasks requiring attention have been listed below:
 - [ ] Support for all versions of Laravel 5 (currently tested only on v5.3)
 - [ ] Contracts and drivers (currently depends on Eloquent)
 - [ ] Content negotiation (support xml response)
+- [ ] Add option which when enabled allow to use only one filter/sort method
 
 
 ## License
