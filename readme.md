@@ -20,6 +20,8 @@ Laravel package with a set of tools helpful for building REST API.
     - [Updated](#updated)
     - [Patched](#patched)
     - [Deleted](#deleted)
+- [Tips and tricks](#tips-and-tricks)
+  - [Default Context](#default-context)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -420,6 +422,8 @@ Some tasks requiring attention have been listed below:
 - [ ] Contracts and drivers (currently depends on Eloquent)
 - [ ] Content negotiation (support xml response)
 - [ ] Add option which when enabled allow to use only one filter/sort method
+- [ ] Better documentation (GitHub pages)
+- [ ] Example usage (tutorial)
 
 
 ## License
