@@ -33,7 +33,7 @@ To install this package you will need:
 
 Require this package with composer:
 ```
-composer require mleczek/rest
+composer require mleczek/laravel-rest
 ```
 
 In `config/app.php` add the `RestServiceProvider`:
