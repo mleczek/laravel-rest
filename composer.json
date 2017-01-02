@@ -3,7 +3,7 @@
     "description": "Laravel package with a set of helpful tools for building REST API.",
     "type": "library",
     "keywords": ["laravel", "rest", "api"],
-    "homepage": "https://github.com/mleczek/rest",
+    "homepage": "https://github.com/mleczek/laravel-rest",
     "license": "MIT",
     "authors": [
         {
@@ -28,8 +28,8 @@
             "Mleczek\\Rest\\": "src/"
         }
     },
-    "psr-4": {
-        "autoload-dev": {
+    "autoload-dev": {
+        "psr-4": {
             "Mleczek\\Rest\\Tests\\": "tests/"
         }
     }
