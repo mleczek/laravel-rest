@@ -284,11 +284,24 @@ use `rest()` helper funtion:
 public function show()
 {
     $user = rest()->item(User::query());
-    $this->authorize('show', $user);
+    $this->authorize('show', $user); // bad usage, see below solution
 
     return response()->item($user);
 }
 ```
+
+The above example has one major defect, the second argument passed to the `authorize` can contain only fields specified in the `fields` query param. The better solution is to retrieve the whole model, call `authorize` method and then apply the query param transformations:
+```php
+public function show()
+{
+    $user = User::first();
+    $this->authorize('show', $user);
+    
+    return response()->item($user);
+}
+```
+
+Summarizing, the `response()->item()` macro can accept the `Illuminate\Database\Eloquent\Model` or `Illuminate\Database\Eloquent\Builder` object.
 
 #### Collection
 ```php
@@ -405,25 +418,6 @@ with password column). Any ideas are welcome.
 ## Contributing
 Thank you for considering contributing! If you would like to fix a bug or propose
 a new feature, you can submit a Pull Request.
-
-Some tasks requiring attention have been listed below:
-
-- [ ] Write tests
-- [x] Resolve context classes using service container
-- [x] Default sort and filter context
-- [ ] Timestamp sort and filter context
-- [ ] Params validation
-- [x] Pre processing (query)
-- [ ] Post processing (results)
-- [x] Add macro `response()->item($model)`
-- [x] Add macro `response()->collection($models)`
-- [x] Implement `QueryExecutor` and associated `rest()` helper: `rest()->item($query)`
-- [ ] Support for all versions of Laravel 5 (currently tested only on v5.3)
-- [ ] Contracts and drivers (currently depends on Eloquent)
-- [ ] Content negotiation (support xml response)
-- [ ] Add option which when enabled allow to use only one filter/sort method
-- [ ] Better documentation (GitHub pages)
-- [ ] Example usage (tutorial)
 
 
 ## License
