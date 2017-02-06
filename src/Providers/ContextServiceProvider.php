@@ -1,11 +1,9 @@
 <?php
 
+namespace App\Providers;
 
-namespace Mleczek\Rest\Providers;
 
-
-use Illuminate\Support\ServiceProvider;
-use Mleczek\Rest\ContextRepository;
+use Mleczek\Rest\Providers\BaseContextServiceProvider;
 
 class ContextServiceProvider extends BaseContextServiceProvider
 {

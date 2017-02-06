@@ -1,10 +1,12 @@
 <?php
 
 
-namespace Mleczek\Rest;
+namespace Mleczek\Rest\PostProcessing;
 
 
-class QueryBuilderFactory
+use Mleczek\Rest\ContextRepository;
+
+class ModelBuilderFactory
 {
     /**
      * @var ContextRepository
@@ -21,8 +23,8 @@ class QueryBuilderFactory
         $this->context = $context;
     }
 
-    public function make($query)
+    public function make($model)
     {
-        return new QueryBuilder($query, $this->context);
+        return new ModelBuilder($model, $this->context);
     }
 }

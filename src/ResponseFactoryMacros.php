@@ -7,6 +7,7 @@ namespace Mleczek\Rest;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Mleczek\Rest\PostProcessing\ModelExecutor;
 use phpDocumentor\Reflection\Types\Context;
 
 class ResponseFactoryMacros
@@ -19,25 +20,35 @@ class ResponseFactoryMacros
     /**
      * @var QueryExecutor
      */
-    protected $executor;
+    protected $queryExecutor;
+
+    /**
+     * @var ModelExecutor
+     */
+    private $modelExecutor;
 
     /**
      * Macros constructor.
      *
      * @param ResponseFactory $response
-     * @param RequestParser $request
-     * @param QueryBuilderFactory $builder
+     * @param QueryExecutor $queryExecutor
+     * @param ModelExecutor $modelExecutor
+     * @internal param RequestParser $request
+     * @internal param QueryBuilderFactory $builder
      */
-    public function __construct(ResponseFactory $response, QueryExecutor $executor)
+    public function __construct(ResponseFactory $response, QueryExecutor $queryExecutor, ModelExecutor $modelExecutor)
     {
         $this->response = $response;
-        $this->executor = $executor;
+        $this->queryExecutor = $queryExecutor;
+        $this->modelExecutor = $modelExecutor;
     }
 
     public function item($data)
     {
-        if($data instanceof Builder) {
-            $data = $this->executor->item($data);
+        if ($data instanceof Builder) {
+            $data = $this->queryExecutor->item($data);
+        } else if ($data instanceof Model) {
+            $data = $this->modelExecutor->item($data);
         }
 
         return $this->response->json($data, 200);
@@ -45,8 +56,8 @@ class ResponseFactoryMacros
 
     public function collection($data)
     {
-        if($data instanceof Builder) {
-            $data = $this->executor->collection($data);
+        if ($data instanceof Builder) {
+            $data = $this->queryExecutor->collection($data);
         }
 
         return $this->response->json($data, 206);
@@ -66,7 +77,7 @@ class ResponseFactoryMacros
     {
         $response = $this->response->json($model, 201);
 
-        if(!is_null($location)) {
+        if (!is_null($location)) {
             $response->withHeaders(['Location' => $location]);
         }
 
