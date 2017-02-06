@@ -1,4 +1,9 @@
 # Laravel REST Package
+
+[![Latest Stable Version](https://poser.pugx.org/mleczek/laravel-rest/v/stable)](https://packagist.org/packages/mleczek/laravel-rest)
+[![Build Status](https://travis-ci.org/mleczek/laravel-rest.svg)](https://travis-ci.org/mleczek/laravel-rest)
+[![License](https://poser.pugx.org/mleczek/laravel-rest/license)](https://packagist.org/packages/mleczek/laravel-rest)
+
 Laravel package with a set of tools helpful for building REST API.
 
 - [Installation](#installation)
