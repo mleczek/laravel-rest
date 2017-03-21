@@ -7,6 +7,7 @@ namespace Mleczek\Rest;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Mleczek\Rest\PostProcessing\ModelExecutor;
 use phpDocumentor\Reflection\Types\Context;
 
@@ -45,7 +46,7 @@ class ResponseFactoryMacros
 
     public function item($data)
     {
-        if ($data instanceof Builder) {
+        if ($data instanceof Builder || $data instanceof Relation) {
             $data = $this->queryExecutor->item($data);
         } else if ($data instanceof Model) {
             $data = $this->modelExecutor->item($data);
@@ -56,7 +57,7 @@ class ResponseFactoryMacros
 
     public function collection($data)
     {
-        if ($data instanceof Builder) {
+        if ($data instanceof Builder || $data instanceof Relation) {
             $data = $this->queryExecutor->collection($data);
         }
 
