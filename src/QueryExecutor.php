@@ -5,6 +5,8 @@ namespace Mleczek\Rest;
 
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class QueryExecutor
 {
@@ -49,7 +51,11 @@ class QueryExecutor
         }
     }
 
-    public function item(Builder $query)
+    /**
+     * @param Builder|Relation $query
+     * @return Model
+     */
+    public function item($query)
     {
         $builder = $this->builder->make($query)
             ->fields($this->request->fields());
@@ -58,7 +64,11 @@ class QueryExecutor
         return $builder->getItem();
     }
 
-    public function collection(Builder $query)
+    /**
+     * @param Builder|Relation $query
+     * @return object
+     */
+    public function collection($query)
     {
         $builder = $this->builder->make($query)
             ->sort($this->request->sort())

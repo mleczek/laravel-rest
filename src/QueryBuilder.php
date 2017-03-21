@@ -184,6 +184,9 @@ class QueryBuilder
         return $this;
     }
 
+    /**
+     * @return Model
+     */
     public function getItem()
     {
         $results = $this->query->firstOrFail();
@@ -192,6 +195,9 @@ class QueryBuilder
         return $results;
     }
 
+    /**
+     * @return Collection
+     */
     public function getCollection()
     {
         $results = $this->query->get();
