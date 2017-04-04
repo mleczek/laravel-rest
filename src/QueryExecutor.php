@@ -85,6 +85,7 @@ class QueryExecutor
         return (object)[
             'count' => $entities->count(),
             'limit' => $this->request->limit(),
+            'total' => $builder->getQuery()->count(),
             'offset' => $this->request->offset(),
             'data' => $entities,
         ];
