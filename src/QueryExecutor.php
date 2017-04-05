@@ -73,8 +73,10 @@ class QueryExecutor
         $builder = $this->builder->make($query)
             ->sort($this->request->sort())
             ->filter($this->request->filters())
-            ->fields($this->request->fields())
-            ->offset($this->request->offset())
+            ->fields($this->request->fields());
+
+        $total = $builder->getQuery()->count();
+        $builder->offset($this->request->offset())
             ->limit($this->request->limit());
 
         $this->includeRelations($builder);
@@ -85,7 +87,7 @@ class QueryExecutor
         return (object)[
             'count' => $entities->count(),
             'limit' => $this->request->limit(),
-            'total' => $builder->getQuery()->count(),
+            'total' => $total,
             'offset' => $this->request->offset(),
             'data' => $entities,
         ];
