@@ -336,6 +336,7 @@ public function show()
     // $users->count  - number of retrieved models [0,limit]
     // $users->limit  - max number of retrieved models
     // $users->offset - number of skipped models
+    // $users->total  - number of all available models
     // $users->data   - retrieved models
 
     return response()->collections($users);
