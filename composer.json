@@ -12,9 +12,9 @@
         }
     ],
     "require": {
-        "Illuminate/Support": "^5.3",
-        "Illuminate/Http": "^5.3",
-        "Illuminate/Database": "^5.3"
+        "illuminate/support": "^5.3",
+        "illuminate/http": "^5.3",
+        "illuminate/database": "^5.3"
     },
     "require-dev": {
     	"phpunit/phpunit": "~5.7",
